@@ -28,7 +28,7 @@ struct ComposeChirpView: View {
                     .overlay(RoundedRectangle(cornerRadius: 8)
                         .stroke(Color.gray.opacity(0.5), lineWidth: 1))
                     .onChange(of: chirpText) { newValue in
-                        // Limit to 280 characters
+                        // Limit to 280 chars
                         if newValue.count > 280 {
                             chirpText = String(newValue.prefix(280))
                         }
@@ -86,11 +86,11 @@ struct ComposeChirpView: View {
     }
     
     func postChirp() {
-        // Prepare chirp data
+        // Prepare chirp data forc\firebase
         var chirpData: [String: Any] = [
             "text": chirpText,
             "timestamp": FieldValue.serverTimestamp(),
-            // You can add more fields, e.g., current user's username
+            // We can add more fields, e.g., current user's username
         ]
         if let location = selectedLocation {
             chirpData["location"] = location

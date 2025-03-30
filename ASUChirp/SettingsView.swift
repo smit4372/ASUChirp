@@ -1,29 +1,3 @@
-//
-//  SettingsView.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 3/29/25.
-//
-//
-//import SwiftUI
-//
-//struct SettingsView: View {
-//    @EnvironmentObject var sessionStore: SessionStore
-//    
-//    var body: some View {
-//        VStack {
-//            Text("Settings")
-//                .font(.largeTitle)
-//                .padding()
-//            Spacer()
-//            Button("Logout") {
-//                sessionStore.signOut()
-//            }
-//            .padding()
-//            Spacer()
-//        }
-//    }
-//}
 
 import SwiftUI
 import FirebaseAuth

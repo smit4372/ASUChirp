@@ -33,7 +33,7 @@ struct EditProfileView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
                         // Save the updated profile info to Firestore or local settings.
-                        // For now, we just dismiss.
+                        // For now, we dismiss.
                         presentationMode.wrappedValue.dismiss()
                     }
                 }
