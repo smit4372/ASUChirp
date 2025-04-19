@@ -39,8 +39,10 @@ struct MapExplorerView: View {
                         }
                     }
                 }
-                .edgesIgnoringSafeArea(.bottom)
-                
+                .colorScheme(.light) // Force light mode for map
+                .overlay(
+                    Color.clear
+                )
                 VStack {
                     Spacer()
                     
