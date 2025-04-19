@@ -10,8 +10,11 @@ import SwiftUI
 struct ChirpDetailView: View {
     let chirp: Chirp
     @StateObject private var commentViewModel: CommentViewModel
+    @StateObject private var likeViewModel = ChirpListViewModel()
     @EnvironmentObject var sessionViewModel: SessionViewModel
     @Environment(\.presentationMode) var presentationMode
+    @State private var isLiked: Bool = false
+    @State private var localLikeCount: Int = 0
     
     init(chirp: Chirp) {
         self.chirp = chirp
@@ -58,13 +61,25 @@ struct ChirpDetailView: View {
                             
                             // Engagement Stats
                             HStack(spacing: 20) {
-                                HStack {
-                                    Image(systemName: "heart")
-                                        .foregroundColor(.red)
-                                    Text("\(chirp.likeCount)")
-                                        .foregroundColor(.gray)
+                                Button(action: {
+                                    if let userId = sessionViewModel.currentUser?.id {
+                                        // Toggle local state for immediate feedback
+                                        isLiked.toggle()
+                                        localLikeCount = isLiked ? localLikeCount + 1 : max(0, localLikeCount - 1)
+                                        
+                                        // Call API to update on server
+                                        likeViewModel.likeChirp(chirpId: chirp.id, userId: userId) { _ in }
+                                    }
+                                }) {
+                                    HStack {
+                                        Image(systemName: isLiked ? "heart.fill" : "heart")
+                                            .foregroundColor(.red)
+                                        Text("\(localLikeCount)")
+                                            .foregroundColor(.gray)
+                                    }
+                                    .frame(minWidth: 40)
                                 }
-                                .frame(minWidth: 40)
+                                .buttonStyle(BorderlessButtonStyle())
                                 
                                 HStack {
                                     Image(systemName: "bubble.left")
@@ -152,6 +167,12 @@ struct ChirpDetailView: View {
             }
             .onAppear {
                 commentViewModel.fetchComments()
+                
+                // Initialize like state and count
+                if let userId = sessionViewModel.currentUser?.id {
+                    isLiked = chirp.likedBy.contains(userId)
+                }
+                localLikeCount = chirp.likeCount
             }
         }
     }

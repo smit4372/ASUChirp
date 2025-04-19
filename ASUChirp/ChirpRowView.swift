@@ -10,7 +10,7 @@ import SwiftUI
 struct ChirpRowView: View {
     let chirp: Chirp
     @EnvironmentObject var sessionViewModel: SessionViewModel
-    @StateObject private var viewModel = ChirpListViewModel()
+    @StateObject private var likeViewModel = ChirpListViewModel()
     @State private var isLiked: Bool = false
     @State private var localLikeCount: Int = 0
     
@@ -59,7 +59,7 @@ struct ChirpRowView: View {
                         localLikeCount = isLiked ? localLikeCount + 1 : max(0, localLikeCount - 1)
                         
                         // Call API to update on server
-                        viewModel.likeChirp(chirpId: chirp.id, userId: userId) { _ in }
+                        likeViewModel.likeChirp(chirpId: chirp.id, userId: userId) { _ in }
                     }
                 }) {
                     HStack {
@@ -71,7 +71,8 @@ struct ChirpRowView: View {
                     }
                     .frame(minWidth: 40)
                 }
-                
+                .buttonStyle(BorderlessButtonStyle()) // This is crucial for nested buttons
+
                 HStack {
                     Image(systemName: "bubble.left")
                         .foregroundColor(.blue)
