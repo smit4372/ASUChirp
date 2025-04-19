@@ -5,92 +5,88 @@
 //  Created by Smit Desai on 3/29/25.
 //
 
-
 import SwiftUI
 import FirebaseFirestore
 
-struct Chirp: Identifiable {
-    var id: String
-    var username: String
-    var text: String
-    var timestamp: Date
-}
-
-class ChirpViewModel: ObservableObject {
-    @Published var chirps: [Chirp] = []
-    private var db = Firestore.firestore()
-    
-    init() {
-        fetchChirps()
-    }
-    
-    func fetchChirps() {
-        db.collection("chirps")
-            .order(by: "timestamp", descending: true)
-            .addSnapshotListener { (querySnapshot, error) in
-                guard let documents = querySnapshot?.documents else {
-                    print("No documents in chirps collection")
-                    return
-                }
-                self.chirps = documents.compactMap { queryDocumentSnapshot -> Chirp? in
-                    let data = queryDocumentSnapshot.data()
-                    guard let username = data["username"] as? String,
-                          let text = data["text"] as? String,
-                          let timestamp = data["timestamp"] as? Timestamp else {
-                        return nil
-                    }
-                    return Chirp(id: queryDocumentSnapshot.documentID,
-                                 username: username,
-                                 text: text,
-                                 timestamp: timestamp.dateValue())
-                }
-            }
-    }
-}
-
 struct HomeFeedView: View {
-    @StateObject var viewModel = ChirpViewModel()
-    @State private var showingCompose = false
-
+    @StateObject private var viewModel = ChirpListViewModel()
+    @State private var showingComposeView = false
+    @State private var selectedChirp: Chirp? = nil
+    @State private var showChirpDetail = false
+    
     var body: some View {
         NavigationView {
-            List(viewModel.chirps) { chirp in
-                VStack(alignment: .leading) {
-                    Text(chirp.username)
-                        .font(.headline)
-                    Text(chirp.text)
-                    Text(chirp.timestamp, style: .time)
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                }
-                .padding(.vertical, 8)
-            }
-            .navigationTitle("Chirp Feed")
-//            .navigationBarItems(trailing:
-//                NavigationLink(destination: SettingsView()) {
-//                    Image(systemName: "gear")
-//                }
-//            )
-            .toolbar {
-                // Compose button in the top-right corner
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        showingCompose = true
-                    }) {
-                        Image(systemName: "square.and.pencil")
+            ZStack(alignment: .bottomTrailing) {
+                if viewModel.isLoading && viewModel.chirps.isEmpty {
+                    ProgressView()
+                        .scaleEffect(1.5)
+                } else if viewModel.chirps.isEmpty {
+                    VStack {
+                        Text("No chirps yet!")
+                            .font(.title2)
+                            .foregroundColor(.gray)
+                        
+                        Text("Be the first to post something!")
+                            .foregroundColor(.gray)
+                            .padding(.top, 5)
+                        
+                        Button(action: {
+                            showingComposeView = true
+                        }) {
+                            Text("Create a Chirp")
+                                .padding()
+                                .background(Color.blue.opacity(0.1))
+                                .cornerRadius(8)
+                        }
+                        .padding(.top)
+                    }
+                } else {
+                    List {
+                        ForEach(viewModel.chirps) { chirp in
+                            ChirpRowView(chirp: chirp)
+                                .onTapGesture {
+                                    selectedChirp = chirp
+                                    showChirpDetail = true
+                                }
+                                .listRowSeparator(.hidden)
+                        }
+                    }
+                    .listStyle(PlainListStyle())
+                    .refreshable {
+                        viewModel.fetchChirps()
                     }
                 }
-                // Settings button
-                ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink(destination: SettingsView()) {
-                        Image(systemName: "gear")
-                    }
+                
+                // Compose Button
+                Button(action: {
+                    showingComposeView = true
+                }) {
+                    Image(systemName: "square.and.pencil")
+                        .font(.title)
+                        .foregroundColor(.white)
+                        .frame(width: 60, height: 60)
+                        .background(Color.blue)
+                        .clipShape(Circle())
+                        .shadow(radius: 4)
                 }
+                .padding(.trailing, 20)
+                .padding(.bottom, 20)
             }
-            .sheet(isPresented: $showingCompose) {
+            .navigationTitle("ASU Chirp")
+            .navigationBarTitleDisplayMode(.inline)
+            .sheet(isPresented: $showingComposeView) {
                 ComposeChirpView()
+            }
+            .sheet(isPresented: $showChirpDetail, onDismiss: {
+                selectedChirp = nil
+            }) {
+                if let chirp = selectedChirp {
+                    ChirpDetailView(chirp: chirp)
+                }
+            }
+            .onAppear {
+                viewModel.fetchChirps()
             }
         }
     }
 }
-

@@ -9,13 +9,18 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var sessionStore: SessionStore
+    @EnvironmentObject var sessionViewModel: SessionViewModel
+    @AppStorage("isDarkMode") private var isDarkMode = false
     
     var body: some View {
-        if sessionStore.currentUser != nil {
-            HomeFeedView()
-        } else {
-            LoginView()
+        Group {
+            if sessionViewModel.currentUser != nil {
+                MainTabView()
+                    .preferredColorScheme(isDarkMode ? .dark : .light)
+            } else {
+                LoginView()
+                    .preferredColorScheme(isDarkMode ? .dark : .light)
+            }
         }
     }
 }

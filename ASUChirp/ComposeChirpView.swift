@@ -6,103 +6,140 @@
 //
 
 import SwiftUI
-import FirebaseFirestore
 import MapKit
 
 struct ComposeChirpView: View {
     @Environment(\.presentationMode) var presentationMode
-    @State private var chirpText: String = ""
-    @State private var selectedLocation: String? = nil
+    @StateObject private var viewModel = ComposeChirpViewModel()
+    @EnvironmentObject var sessionViewModel: SessionViewModel
     @State private var showLocationPicker = false
-    @State private var errorMessage: String = ""
-    
-    // Firestore reference
-    let db = Firestore.firestore()
     
     var body: some View {
         NavigationView {
-            VStack {
-                TextEditor(text: $chirpText)
-                    .padding()
-                    .frame(height: 150)
-                    .overlay(RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.gray.opacity(0.5), lineWidth: 1))
-                    .onChange(of: chirpText) { newValue in
-                        // Limit to 280 chars
-                        if newValue.count > 280 {
-                            chirpText = String(newValue.prefix(280))
-                        }
-                    }
-                
+            VStack(spacing: 15) {
+                // Character count indicator
                 HStack {
-                    Text("Characters: \(chirpText.count)/280")
-                        .font(.caption)
-                        .foregroundColor(.gray)
                     Spacer()
-                    if let location = selectedLocation {
-                        Text("Location: \(location)")
-                            .font(.caption)
-                            .foregroundColor(.blue)
-                    }
+                    Text("\(viewModel.characterCount)/280")
+                        .font(.caption)
+                        .foregroundColor(viewModel.characterCount > 270 ? .red : .gray)
+                        .padding(.trailing)
                 }
+                
+                // Text input area
+                ZStack(alignment: .topLeading) {
+                    if viewModel.chirpText.isEmpty {
+                        Text("What's happening on campus?")
+                            .foregroundColor(.gray)
+                            .padding(.horizontal, 8)
+                            .padding(.top, 8)
+                    }
+                    
+                    TextEditor(text: $viewModel.chirpText)
+                        .padding(4)
+                        .onChange(of: viewModel.chirpText) { newValue in
+                            // Limit to 280 chars
+                            if newValue.count > 280 {
+                                viewModel.chirpText = String(newValue.prefix(280))
+                            }
+                        }
+                }
+                .frame(height: 150)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                )
                 .padding(.horizontal)
                 
+                // Location tag
+                if let location = viewModel.selectedLocation {
+                    HStack {
+                        Image(systemName: "mappin.and.ellipse")
+                            .foregroundColor(.red)
+                        Text(location.name)
+                            .foregroundColor(.blue)
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            viewModel.clearLocation()
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.vertical, 5)
+                    .background(Color.blue.opacity(0.1))
+                    .cornerRadius(8)
+                    .padding(.horizontal)
+                }
+                
+                // Location Tag Button
                 Button(action: {
                     showLocationPicker = true
                 }) {
-                    Text(selectedLocation == nil ? "Tag Location" : "Change Location")
-                        .padding()
-                        .background(Color.blue.opacity(0.1))
-                        .cornerRadius(8)
-                }
-                .padding(.vertical)
-                .sheet(isPresented: $showLocationPicker) {
-                    LocationPickerView(selectedLocation: $selectedLocation)
+                    HStack {
+                        Image(systemName: "mappin")
+                        Text(viewModel.selectedLocation == nil ? "Tag Location" : "Change Location")
+                    }
+                    .padding()
+                    .foregroundColor(.blue)
+                    .background(Color.blue.opacity(0.1))
+                    .cornerRadius(8)
                 }
                 
-                if !errorMessage.isEmpty {
+                if let errorMessage = viewModel.errorMessage {
                     Text(errorMessage)
                         .foregroundColor(.red)
+                        .font(.caption)
                 }
                 
                 Spacer()
             }
             .padding()
             .navigationTitle("Compose Chirp")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
                         presentationMode.wrappedValue.dismiss()
                     }
                 }
+                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Post") {
-                        postChirp()
+                        guard let user = sessionViewModel.currentUser else { return }
+                        
+                        viewModel.postChirp(
+                            userId: user.id,
+                            username: user.displayName ?? user.email.components(separatedBy: "@").first ?? "ASU Student",
+                            userEmail: user.email
+                        ) { success in
+                            if success {
+                                presentationMode.wrappedValue.dismiss()
+                            }
+                        }
                     }
-                    .disabled(chirpText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .disabled(!viewModel.isValidChirp || viewModel.isLoading)
                 }
             }
-        }
-    }
-    
-    func postChirp() {
-        // Prepare chirp data forc\firebase
-        var chirpData: [String: Any] = [
-            "text": chirpText,
-            "timestamp": FieldValue.serverTimestamp(),
-            // We can add more fields, e.g., current user's username
-        ]
-        if let location = selectedLocation {
-            chirpData["location"] = location
-        }
-        
-        db.collection("chirps").addDocument(data: chirpData) { error in
-            if let error = error {
-                errorMessage = "Error posting chirp: \(error.localizedDescription)"
-            } else {
-                // On success, dismiss view
-                presentationMode.wrappedValue.dismiss()
+            .sheet(isPresented: $showLocationPicker) {
+                LocationPickerView(onLocationSelected: { coordinate, name in
+                    viewModel.setLocation(coordinate: coordinate, name: name)
+                })
             }
+            .overlay(
+                Group {
+                    if viewModel.isLoading {
+                        Color.black.opacity(0.2)
+                            .ignoresSafeArea()
+                        
+                        ProgressView()
+                            .scaleEffect(1.5)
+                    }
+                }
+            )
         }
     }
 }

@@ -16,9 +16,27 @@ class SessionStore: ObservableObject {
         listen()
     }
     
+//    func listen() {
+//        authStateListenerHandle = Auth.auth().addStateDidChangeListener { auth, user in
+//            self.currentUser = user
+//        }
+//    }
+    
     func listen() {
-        authStateListenerHandle = Auth.auth().addStateDidChangeListener { auth, user in
-            self.currentUser = user
+        authStateListenerHandle = Auth.auth().addStateDidChangeListener { auth, firebaseUser in
+            if let firebaseUser = firebaseUser {
+                // Convert Firebase User to your custom User model
+                let user = User(
+                    id: firebaseUser.uid,
+                    email: firebaseUser.email ?? "",
+                    displayName: firebaseUser.displayName,
+                    bio: nil,
+                    joinDate: Date()
+                )
+                self.currentUser = user
+            } else {
+                self.currentUser = nil
+            }
         }
     }
     
