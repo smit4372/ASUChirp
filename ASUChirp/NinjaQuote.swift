@@ -8,6 +8,6 @@
 import Foundation
 
 struct NinjaQuote: Decodable {
-    let quote: String
-    let author: String
+    let quote: String
+    let author: String
 }
