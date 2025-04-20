@@ -15,6 +15,8 @@ struct ChirpDetailView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var isLiked: Bool = false
     @State private var localLikeCount: Int = 0
+    @State private var isSubmittingComment = false
+    @State private var refreshID = UUID()
     
     init(chirp: Chirp) {
         self.chirp = chirp
@@ -113,13 +115,15 @@ struct ChirpDetailView: View {
                         .padding(.horizontal)
                         
                         // Comments
-                        if commentViewModel.isLoading {
+                        if commentViewModel.isLoading && commentViewModel.comments.isEmpty {
                             ProgressView()
+                                .padding()
                         } else if commentViewModel.comments.isEmpty {
                             Text("No comments yet. Be the first to comment!")
                                 .foregroundColor(.gray)
                                 .italic()
                                 .padding()
+                                .id(refreshID) // Attach refresh ID
                         } else {
                             LazyVStack(alignment: .leading, spacing: 15) {
                                 ForEach(commentViewModel.comments) { comment in
@@ -127,6 +131,7 @@ struct ChirpDetailView: View {
                                 }
                             }
                             .padding(.horizontal)
+                            .id(refreshID) // Attach refresh ID
                         }
                     }
                     .padding()
@@ -143,17 +148,42 @@ struct ChirpDetailView: View {
                         Button(action: {
                             guard let user = sessionViewModel.currentUser else { return }
                             
+                            isSubmittingComment = true
+                            
                             commentViewModel.postComment(
                                 userId: user.id,
                                 username: user.displayName ?? user.email
-                            ) { _ in }
+                            ) { success in
+                                isSubmittingComment = false
+                                
+                                if success {
+                                    // Force UI refresh with new UUID
+                                    refreshID = UUID()
+                                }
+                            }
                         }) {
-                            Image(systemName: "paperplane.fill")
-                                .foregroundColor(.blue)
+                            if isSubmittingComment {
+                                ProgressView()
+                                    .frame(width: 30, height: 30)
+                            } else {
+                                Image(systemName: "paperplane.fill")
+                                    .foregroundColor(.blue)
+                                    .frame(width: 30, height: 30)
+                            }
                         }
-                        .disabled(commentViewModel.commentText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || commentViewModel.isLoading)
+                        .disabled(commentViewModel.commentText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isSubmittingComment)
+                        .buttonStyle(BorderlessButtonStyle())
                     }
                     .padding()
+                }
+                
+                // Show error messages
+                if let errorMessage = commentViewModel.errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .font(.caption)
+                        .padding(.horizontal)
+                
                 }
             }
             .navigationTitle("Chirp Details")
@@ -167,12 +197,6 @@ struct ChirpDetailView: View {
             }
             .onAppear {
                 commentViewModel.fetchComments()
-                
-                // Initialize like state and count
-                if let userId = sessionViewModel.currentUser?.id {
-                    isLiked = chirp.likedBy.contains(userId)
-                }
-                localLikeCount = chirp.likeCount
             }
         }
     }
