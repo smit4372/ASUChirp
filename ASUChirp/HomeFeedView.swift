@@ -10,6 +10,7 @@ import FirebaseFirestore
 
 struct HomeFeedView: View {
     @StateObject private var viewModel = ChirpListViewModel()
+    @StateObject private var quoteVM = NinjaQuoteViewModel()
     @State private var showingComposeView = false
     @State private var selectedChirp: Chirp? = nil
     @State private var showChirpDetail = false
@@ -17,75 +18,58 @@ struct HomeFeedView: View {
     var body: some View {
         NavigationView {
             ZStack(alignment: .bottomTrailing) {
-                if viewModel.isLoading && viewModel.chirps.isEmpty {
-                    ProgressView()
-                        .scaleEffect(1.5)
-                } else if viewModel.chirps.isEmpty {
-                    VStack {
-                        Text("No chirps yet!")
-                            .font(.title2)
-                            .foregroundColor(.gray)
+                VStack(alignment: .leading, spacing: 10) {
+                    
+                    if viewModel.isLoading && viewModel.chirps.isEmpty {
                         
-                        Text("Be the first to post something!")
-                            .foregroundColor(.gray)
-                            .padding(.top, 5)
-                        
-                        Button(action: {
-                            showingComposeView = true
-                        }) {
-                            Text("Create a Chirp")
-                                .padding()
-                                .background(Color.blue.opacity(0.1))
-                                .cornerRadius(8)
-                        }
-                        .padding(.top)
-                    }
-                } else {
-                    List {
-                        ForEach(viewModel.chirps) { chirp in
-                            ChirpRowView(chirp: chirp)
-                                .onTapGesture {
-                                    selectedChirp = chirp
-                                    showChirpDetail = true
+                        ProgressView()
+                            .scaleEffect(1.5)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                    } else if viewModel.chirps.isEmpty {
+                        Text("No chirps yet.")
+                            .padding()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    } else {
+                        ScrollView {
+                            LazyVStack {
+                                ForEach(viewModel.chirps) { chirp in
+                                    ChirpRowView(chirp: chirp)
+                                        .onTapGesture {
+                                            selectedChirp = chirp
+                                            showChirpDetail = true
+                                        }
                                 }
-                                .listRowSeparator(.hidden)
+                            }
                         }
-                    }
-                    .listStyle(PlainListStyle())
-                    .refreshable {
-                        viewModel.fetchChirps()
                     }
                 }
                 
-                // Compose Button
                 Button(action: {
                     showingComposeView = true
                 }) {
-                    Image(systemName: "square.and.pencil")
+                    Image(systemName: "plus")
                         .font(.title)
+                        .padding()
+                        .background(Color.accentColor)
                         .foregroundColor(.white)
-                        .frame(width: 60, height: 60)
-                        .background(Color.blue)
                         .clipShape(Circle())
-                        .shadow(radius: 4)
+                        .shadow(radius: 5)
                 }
-                .padding(.trailing, 20)
-                .padding(.bottom, 20)
+                .padding()
             }
-            .navigationTitle("ASU Chirp")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("Home")
             .sheet(isPresented: $showingComposeView) {
                 ComposeChirpView()
             }
-            .sheet(isPresented: $showChirpDetail, onDismiss: {
-                selectedChirp = nil
-            }) {
-                if let chirp = selectedChirp {
-                    ChirpDetailView(chirp: chirp)
+            .sheet(isPresented: $showChirpDetail) {
+                if let selected = selectedChirp {
+                    ChirpDetailView(chirp: selected)
                 }
             }
             .onAppear {
                 viewModel.fetchChirps()
+                quoteVM.postDailyQuoteIfNeeded()
             }
         }
     }
