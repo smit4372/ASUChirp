@@ -1,11 +1,4 @@
-//
-//  User.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 4/17/25.
-//
-
-// User.swift
+// user view
 import Foundation
 import FirebaseAuth
 
@@ -16,7 +9,6 @@ struct User: Identifiable {
     var bio: String?
     var joinDate: Date
     
-    // Create from Firebase Auth User
     static func fromFirebaseUser(_ user: FirebaseAuth.User) -> User {
         return User(
             id: user.uid,

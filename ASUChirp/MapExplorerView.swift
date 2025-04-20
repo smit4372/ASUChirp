@@ -1,10 +1,3 @@
-//
-//  MapExplorerView.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 4/17/25.
-//
-
 import SwiftUI
 import MapKit
 
@@ -39,7 +32,7 @@ struct MapExplorerView: View {
                         }
                     }
                 }
-                .colorScheme(.light) // Force light mode for map
+                .colorScheme(.light)
                 .overlay(
                     Color.clear
                 )
@@ -47,7 +40,7 @@ struct MapExplorerView: View {
                     Spacer()
                     
                     if let selectedChirp = viewModel.selectedChirp {
-                        // Chirp preview card
+                        // chirp selected preview on bottom
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
                                 Image(systemName: "person.circle.fill")
@@ -111,7 +104,7 @@ struct MapExplorerView: View {
         }
     }
     
-    // Helper function to format time
+    // formatiing time
     private func timeAgoSince(_ date: Date) -> String {
         let calendar = Calendar.current
         let now = Date()
@@ -124,7 +117,7 @@ struct MapExplorerView: View {
         } else if let minute = components.minute, minute > 0 {
             return "\(minute) min ago"
         } else {
-            return "Just now"
+            return "Justt now"
         }
     }
 }

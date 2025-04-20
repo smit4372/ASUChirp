@@ -1,10 +1,4 @@
-//
-//  MapKitExtensions.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 4/17/25.
-//
-
+// for mapkit
 import MapKit
 
 extension MKPlacemark {

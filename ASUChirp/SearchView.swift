@@ -1,10 +1,4 @@
-//
-//  SearchView.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 4/17/25.
-//
-
+// search functionalities
 import SwiftUI
 
 struct SearchView: View {
@@ -16,13 +10,13 @@ struct SearchView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                // Search bar
+                // searching bar
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.gray)
                     
                     TextField("Search chirps or users", text: $viewModel.searchText)
-                        .autocapitalization(.none) // Prevent auto-capitalization
+                        .autocapitalization(.none) // stopping the auto capitalization
                     
                     if !viewModel.searchText.isEmpty {
                         Button(action: {
@@ -39,7 +33,7 @@ struct SearchView: View {
                 .padding(.horizontal)
                 .padding(.top)
                 
-                // Results title
+                // result output
                 if !viewModel.searchText.isEmpty {
                     HStack {
                         if viewModel.formattedSearchText.isEmpty {
@@ -57,7 +51,7 @@ struct SearchView: View {
                     .padding(.bottom, 5)
                 }
                 
-                // Results view
+                // resulting view
                 if viewModel.isLoading {
                     Spacer()
                     ProgressView()
@@ -99,7 +93,7 @@ struct SearchView: View {
                         .padding(.horizontal)
                     }
                 } else {
-                    // Empty state - search suggestions
+                    // suggestions for the search
                     VStack(spacing: 24) {
                         Text("Search for chirps, users, or topics")
                             .font(.headline)

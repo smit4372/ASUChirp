@@ -1,10 +1,3 @@
-//
-//  LocationViewModel.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 4/17/25.
-//
-
 import Foundation
 import MapKit
 import Combine
@@ -17,7 +10,7 @@ class LocationViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    // Initialize with ASU Tempe campus as default
+    // starting from tempe campus
     init(coordinate: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 33.4242399, longitude: -111.9280527)) {
         self.region = MKCoordinateRegion(
             center: coordinate,

@@ -20,7 +20,7 @@ class ChirpMapViewModel: ObservableObject {
     private var db = Firestore.firestore()
     private var listener: ListenerRegistration?
     
-    // Initialize with ASU Tempe campus as default
+    // starting with campus center
     init(coordinate: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 33.4242399, longitude: -111.9280527)) {
         self.region = MKCoordinateRegion(
             center: coordinate,
@@ -32,7 +32,7 @@ class ChirpMapViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         
-        // Use NSNull() instead of nil for Firestore queries
+        // getting all the chirps
         listener = db.collection("chirps")
             .whereField("location", isNotEqualTo: NSNull())
             .order(by: "timestamp", descending: true)

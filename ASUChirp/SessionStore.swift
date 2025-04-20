@@ -1,13 +1,6 @@
-//
-//  SessionStore.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 3/29/25.
-//
-
 import Foundation
 import FirebaseAuth
-
+// session storing for user's login
 class SessionStore: ObservableObject {
     @Published var currentUser: User?
     private var authStateListenerHandle: AuthStateDidChangeListenerHandle?
@@ -15,17 +8,11 @@ class SessionStore: ObservableObject {
     init() {
         listen()
     }
-    
-//    func listen() {
-//        authStateListenerHandle = Auth.auth().addStateDidChangeListener { auth, user in
-//            self.currentUser = user
-//        }
-//    }
-    
+
     func listen() {
         authStateListenerHandle = Auth.auth().addStateDidChangeListener { auth, firebaseUser in
             if let firebaseUser = firebaseUser {
-                // Convert Firebase User to your custom User model
+                // Converting firebase user to custom user
                 let user = User(
                     id: firebaseUser.uid,
                     email: firebaseUser.email ?? "",

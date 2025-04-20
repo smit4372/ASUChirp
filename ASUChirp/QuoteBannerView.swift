@@ -1,10 +1,4 @@
-//
-//  QuoteBannerView.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 4/19/25.
-//
-
+// view for the quote
 import SwiftUI
 
 struct QuoteBannerView: View {

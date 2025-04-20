@@ -1,14 +1,7 @@
-//
-//  ChirpDetailView.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 4/17/25.
-//
-
 import SwiftUI
 
 struct ChirpDetailView: View {
-    let chirp: Chirp
+    let chirp: Chirp // chirp
     @StateObject private var commentViewModel: CommentViewModel
     @StateObject private var likeViewModel = ChirpListViewModel()
     @EnvironmentObject var sessionViewModel: SessionViewModel
@@ -28,9 +21,9 @@ struct ChirpDetailView: View {
             VStack {
                 ScrollView {
                     VStack(spacing: 20) {
-                        // Original Chirp
+                        
                         VStack(alignment: .leading, spacing: 12) {
-                            // User Info
+
                             HStack {
                                 Image(systemName: "person.circle.fill")
                                     .font(.title2)
@@ -46,11 +39,11 @@ struct ChirpDetailView: View {
                                     .foregroundColor(.gray)
                             }
                             
-                            // Chirp Content
+
                             Text(chirp.text)
                                 .fixedSize(horizontal: false, vertical: true)
                             
-                            // Location if available
+                            // optional location
                             if let location = chirp.location {
                                 HStack {
                                     Image(systemName: "mappin.and.ellipse")
@@ -61,15 +54,14 @@ struct ChirpDetailView: View {
                                 }
                             }
                             
-                            // Engagement Stats
+                            // like and comments
                             HStack(spacing: 20) {
                                 Button(action: {
                                     if let userId = sessionViewModel.currentUser?.id {
-                                        // Toggle local state for immediate feedback
                                         isLiked.toggle()
                                         localLikeCount = isLiked ? localLikeCount + 1 : max(0, localLikeCount - 1)
                                         
-                                        // Call API to update on server
+                                        //for like
                                         likeViewModel.likeChirp(chirpId: chirp.id, userId: userId) { _ in }
                                     }
                                 }) {
@@ -98,7 +90,7 @@ struct ChirpDetailView: View {
                         .background(Color(UIColor.secondarySystemBackground))
                         .cornerRadius(12)
                         
-                        // Divider with "Comments" label
+                        // all comments
                         HStack {
                             VStack {
                                 Divider()
@@ -123,7 +115,7 @@ struct ChirpDetailView: View {
                                 .foregroundColor(.gray)
                                 .italic()
                                 .padding()
-                                .id(refreshID) // Attach refresh ID
+                                .id(refreshID)
                         } else {
                             LazyVStack(alignment: .leading, spacing: 15) {
                                 ForEach(commentViewModel.comments) { comment in
@@ -131,13 +123,13 @@ struct ChirpDetailView: View {
                                 }
                             }
                             .padding(.horizontal)
-                            .id(refreshID) // Attach refresh ID
+                            .id(refreshID)
                         }
                     }
                     .padding()
                 }
                 
-                // Comment Input
+                // giving comment input
                 VStack {
                     Divider()
                     
@@ -157,7 +149,7 @@ struct ChirpDetailView: View {
                                 isSubmittingComment = false
                                 
                                 if success {
-                                    // Force UI refresh with new UUID
+                                    //refreshID with new UUID
                                     refreshID = UUID()
                                 }
                             }
@@ -177,7 +169,7 @@ struct ChirpDetailView: View {
                     .padding()
                 }
                 
-                // Show error messages
+                // any errors in the comment
                 if let errorMessage = commentViewModel.errorMessage {
                     Text(errorMessage)
                         .foregroundColor(.red)
@@ -201,7 +193,7 @@ struct ChirpDetailView: View {
         }
     }
     
-    // Helper function to format date
+    // date fomrating
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium

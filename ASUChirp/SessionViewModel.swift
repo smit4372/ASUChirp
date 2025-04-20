@@ -1,9 +1,3 @@
-//
-//  SessionViewModel.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 4/17/25.
-//
 import Foundation
 import FirebaseAuth
 import FirebaseFirestore
@@ -25,7 +19,6 @@ class SessionViewModel: ObservableObject {
             guard let self = self else { return }
             
             if let firebaseUser = firebaseUser {
-                // Convert Firebase User to our User model
                 let user = User(
                     id: firebaseUser.uid,
                     email: firebaseUser.email ?? "",
@@ -35,7 +28,7 @@ class SessionViewModel: ObservableObject {
                 )
                 self.currentUser = user
                 
-                // Check if user document exists, if not create it
+                // checkin if already exist
                 self.ensureUserDocumentExists(userId: user.id, email: user.email, displayName: user.displayName ?? "")
             } else {
                 self.currentUser = nil
@@ -43,7 +36,7 @@ class SessionViewModel: ObservableObject {
         }
     }
     
-    // Ensure user document exists in Firestore
+    // ensuring it exists in the firestore
     private func ensureUserDocumentExists(userId: String, email: String, displayName: String) {
         let userRef = db.collection("users").document(userId)
         
@@ -54,8 +47,7 @@ class SessionViewModel: ObservableObject {
                 self.errorMessage = "Error fetching user: \(error.localizedDescription)"
                 return
             }
-            
-            // If document doesn't exist, create it
+    
             if document == nil || !document!.exists {
                 let userData: [String: Any] = [
                     "email": email,
@@ -70,7 +62,7 @@ class SessionViewModel: ObservableObject {
                     }
                 }
             } else if let document = document, document.exists {
-                // Update our currentUser with Firestore data
+
                 if let data = document.data() {
                     self.currentUser?.displayName = data["displayName"] as? String
                     self.currentUser?.bio = data["bio"] as? String
@@ -129,7 +121,6 @@ class SessionViewModel: ObservableObject {
                 self.errorMessage = error.localizedDescription
                 completion(false)
             } else if let user = result?.user {
-                // Create user profile in Firestore with specified username
                 self.createUserProfile(user: user, username: username) { success in
                     completion(success)
                 }
@@ -169,7 +160,7 @@ class SessionViewModel: ObservableObject {
             "bio": bio
         ]
         
-        // Check if document exists first
+        // Checking if the document exists
         let userRef = db.collection("users").document(userId)
         userRef.getDocument { [weak self] (document, error) in
             guard let self = self else { return }
@@ -180,7 +171,7 @@ class SessionViewModel: ObservableObject {
                 return
             }
             
-            // If document doesn't exist, create it
+            // creating new if it does not exist
             if document == nil || !document!.exists {
                 let fullData: [String: Any] = [
                     "email": self.currentUser?.email ?? "",
@@ -194,20 +185,20 @@ class SessionViewModel: ObservableObject {
                         self.errorMessage = "Error creating profile: \(error.localizedDescription)"
                         completion(false)
                     } else {
-                        // Update local user object
+                        // updating the local user
                         self.currentUser?.displayName = displayName
                         self.currentUser?.bio = bio
                         completion(true)
                     }
                 }
             } else {
-                // Document exists, update it
+                // updating if already there documtn
                 userRef.updateData(profileData) { error in
                     if let error = error {
                         self.errorMessage = "Error updating profile: \(error.localizedDescription)"
                         completion(false)
                     } else {
-                        // Update local user object
+                        // updating local user
                         self.currentUser?.displayName = displayName
                         self.currentUser?.bio = bio
                         completion(true)

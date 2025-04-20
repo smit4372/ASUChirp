@@ -1,9 +1,3 @@
-//
-//  ChirpListViewModel.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 4/17/25.
-//
 import Foundation
 import FirebaseFirestore
 import Combine
@@ -16,7 +10,7 @@ class ChirpListViewModel: ObservableObject {
     private var db = Firestore.firestore()
     private var listener: ListenerRegistration?
     
-    // For filtering by current user if needed
+    // filtering by user
     var currentUserId: String?
     var filterByUser: Bool = false
     
@@ -28,7 +22,7 @@ class ChirpListViewModel: ObservableObject {
             .order(by: "timestamp", descending: true)
             .limit(to: 50)
         
-        // Filter by current user if needed
+        // for current user if needed
         if filterByUser, let userId = currentUserId {
             query = query.whereField("userId", isEqualTo: userId)
         }
@@ -56,6 +50,7 @@ class ChirpListViewModel: ObservableObject {
         }
     }
     
+    // liking the chirp
     func likeChirp(chirpId: String, userId: String, completion: @escaping (Bool) -> Void) {
         let chirpRef = db.collection("chirps").document(chirpId)
         
@@ -76,15 +71,15 @@ class ChirpListViewModel: ObservableObject {
                 return nil
             }
             
-            // Get current like count and liked-by array
+            // getting current likes
             let oldLikeCount = data["likeCount"] as? Int ?? 0
             var likedBy = data["likedBy"] as? [String] ?? []
             
-            // Check if user already liked this chirp
+            // user can only like once
             let alreadyLiked = likedBy.contains(userId)
             
             if alreadyLiked {
-                // Unlike: Remove user from likedBy and decrement count
+                //unliking and removing user from likedBy and decrementing the count
                 if let index = likedBy.firstIndex(of: userId) {
                     likedBy.remove(at: index)
                 }
@@ -93,7 +88,7 @@ class ChirpListViewModel: ObservableObject {
                     "likedBy": likedBy
                 ], forDocument: chirpRef)
             } else {
-                // Like: Add user to likedBy and increment count
+                //liking and adding user to likedBy and increment count
                 likedBy.append(userId)
                 transaction.updateData([
                     "likeCount": oldLikeCount + 1,

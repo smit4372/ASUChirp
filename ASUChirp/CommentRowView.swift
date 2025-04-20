@@ -1,10 +1,3 @@
-//
-//  CommentRowView.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 4/17/25.
-//
-
 import SwiftUI
 
 struct CommentRowView: View {
@@ -37,7 +30,7 @@ struct CommentRowView: View {
         .cornerRadius(10)
     }
     
-    // Helper function to format time
+    // timeformating
     private func timeAgoSince(_ date: Date) -> String {
         let calendar = Calendar.current
         let now = Date()

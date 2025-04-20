@@ -1,10 +1,3 @@
-//
-//  LoginView.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 3/29/25.
-//
-
 import SwiftUI
 import FirebaseAuth
 
@@ -20,7 +13,7 @@ struct LoginView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 25) {
-                    // Logo and Title
+                    // Title logo
                     VStack(spacing: 8) {
                         Image(systemName: "bubble.left.and.bubble.right.fill")
                             .font(.system(size: 60))
@@ -33,7 +26,7 @@ struct LoginView: View {
                     .padding(.top, 20)
                     .padding(.bottom, 30)
                     
-                    // Form Fields
+                    // textbox
                     VStack(spacing: 15) {
                         TextField("ASU Email", text: $email)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -59,7 +52,7 @@ struct LoginView: View {
                         }
                     }
                     
-                    // Error Message
+                    // error
                     if let errorMessage = viewModel.errorMessage {
                         Text(errorMessage)
                             .foregroundColor(.red)
@@ -69,7 +62,7 @@ struct LoginView: View {
                             .padding(.horizontal)
                     }
                     
-                    // Login/Signup Button
+                    // Login or Signup Button
                     Button(action: {
                         if isSignUp {
                             viewModel.signUp(
@@ -93,18 +86,17 @@ struct LoginView: View {
                     }
                     .disabled(viewModel.isLoading || !isValidInput)
                     
-                    // Toggle between Login and Signup
+                    // loginview and signup view
                     Button(action: {
                         isSignUp.toggle()
-                        // Clear fields when switching modes
+                        // clearing text area
                         if isSignUp {
-                            // Keep email if already entered
                             password = ""
                             confirmPassword = ""
                             username = email.components(separatedBy: "@").first ?? ""
+                            // keeping the username as asurite for now
                         } else {
                             confirmPassword = ""
-                            // Keep email and password when going back to login
                         }
                     }) {
                         Text(isSignUp ? "Already have an account? Log In" : "New to ASU Chirp? Sign Up")
@@ -118,7 +110,7 @@ struct LoginView: View {
                     
                     Spacer()
                     
-                    // Information footer
+                    // Message
                     VStack(spacing: 5) {
                         Text("ASU Chirp is exclusively for ASU students")
                             .font(.caption)
@@ -136,6 +128,7 @@ struct LoginView: View {
         }
     }
     
+    // validating all the input
     private var isValidInput: Bool {
         let isEmailValid = !email.isEmpty && email.lowercased().hasSuffix("@asu.edu")
         let isPasswordValid = !password.isEmpty && password.count >= 6

@@ -1,10 +1,3 @@
-//
-//  LocationPickerView.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 3/29/25.
-//
-
 import SwiftUI
 import MapKit
 
@@ -18,7 +11,7 @@ struct LocationPickerView: View {
     var body: some View {
         NavigationView {
             VStack {
-                // Search bar
+                // searching
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.gray)
@@ -46,7 +39,7 @@ struct LocationPickerView: View {
                 .cornerRadius(10)
                 .padding(.horizontal)
                 
-                // Search results or map
+                // Searching result map
                 if !viewModel.searchResults.isEmpty {
                     List {
                         ForEach(viewModel.searchResults, id: \.self) { item in
@@ -70,7 +63,7 @@ struct LocationPickerView: View {
                         }
                     }
                 } else {
-                    // Map view
+                    // map view
                     ZStack {
                         Map(coordinateRegion: $viewModel.region, showsUserLocation: true)
                             .edgesIgnoringSafeArea(.bottom)
@@ -82,12 +75,12 @@ struct LocationPickerView: View {
                                     }
                             )
                         
-                        // Center indicator
+                        // center
                         Image(systemName: "mappin.circle.fill")
                             .font(.title)
                             .foregroundColor(.red)
                         
-                        // Selected location info panel
+                        // selecting the loaction
                         VStack {
                             Spacer()
                             

@@ -1,10 +1,3 @@
-//
-//  MainTabView.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 4/17/25.
-//
-
 import SwiftUI
 
 struct MainTabView: View {

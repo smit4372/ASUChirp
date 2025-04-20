@@ -1,10 +1,3 @@
-//
-//  ComposeChirpView.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 3/29/25.
-//
-
 import SwiftUI
 import MapKit
 
@@ -17,7 +10,7 @@ struct ComposeChirpView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 15) {
-                // Character count indicator
+                // char counting and message
                 HStack {
                     Spacer()
                     Text("\(viewModel.characterCount)/280")
@@ -26,7 +19,7 @@ struct ComposeChirpView: View {
                         .padding(.trailing)
                 }
                 
-                // Text input area
+                // input area
                 ZStack(alignment: .topLeading) {
                     if viewModel.chirpText.isEmpty {
                         Text("What's happening on campus?")
@@ -38,7 +31,7 @@ struct ComposeChirpView: View {
                     TextEditor(text: $viewModel.chirpText)
                         .padding(4)
                         .onChange(of: viewModel.chirpText) { newValue in
-                            // Limit to 280 chars
+                            // max of 280 chars
                             if newValue.count > 280 {
                                 viewModel.chirpText = String(newValue.prefix(280))
                             }
@@ -51,7 +44,7 @@ struct ComposeChirpView: View {
                 )
                 .padding(.horizontal)
                 
-                // Location tag
+                // tagging the location
                 if let location = viewModel.selectedLocation {
                     HStack {
                         Image(systemName: "mappin.and.ellipse")
@@ -75,7 +68,7 @@ struct ComposeChirpView: View {
                     .padding(.horizontal)
                 }
                 
-                // Location Tag Button
+                // button
                 Button(action: {
                     showLocationPicker = true
                 }) {

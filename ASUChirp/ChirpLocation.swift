@@ -15,11 +15,12 @@ struct ChirpLocation {
     var longitude: Double
     var name: String
     
+    
     var coordinate: CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
     
-    // Create from CLLocationCoordinate2D and name
+    // Creating location
     static func from(coordinate: CLLocationCoordinate2D, name: String) -> ChirpLocation {
         return ChirpLocation(
             latitude: coordinate.latitude,

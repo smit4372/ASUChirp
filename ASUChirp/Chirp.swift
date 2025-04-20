@@ -1,10 +1,3 @@
-//
-//  Chirp.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 4/17/25.
-//
-
 import Foundation
 import FirebaseFirestore
 import CoreLocation
@@ -13,15 +6,15 @@ struct Chirp: Identifiable {
     var id: String
     var userId: String
     var username: String
-    var userEmail: String // Added to track which user posted the chirp
+    var userEmail: String // to track user posting the chirp
     var text: String
     var timestamp: Date
     var location: ChirpLocation?
     var likeCount: Int
     var commentCount: Int
-    var likedBy: [String] // Array of user IDs who liked the chirp
+    var likedBy: [String] // likedby
     
-    // Create from Firestore document
+    
     static func fromFirestore(id: String, data: [String: Any]) -> Chirp? {
         guard
             let userId = data["userId"] as? String,
@@ -32,10 +25,10 @@ struct Chirp: Identifiable {
             return nil
         }
         
-        // Extract user email (for filtering chirps by user)
+        
         let userEmail = data["userEmail"] as? String ?? ""
         
-        // Optional location
+        // keeping location optional
         var location: ChirpLocation? = nil
         if let locationData = data["location"] as? [String: Any],
            let latitude = locationData["latitude"] as? Double,
@@ -44,10 +37,10 @@ struct Chirp: Identifiable {
             location = ChirpLocation(latitude: latitude, longitude: longitude, name: name)
         }
         
-        // Get likes
+        // number of likes
         let likeCount = data["likeCount"] as? Int ?? 0
         
-        // Get liked by array
+        // liked by
         let likedBy = data["likedBy"] as? [String] ?? []
         
         return Chirp(
@@ -64,7 +57,7 @@ struct Chirp: Identifiable {
         )
     }
     
-    // Convert to Firestore document
+    // converting to firestore document
     func toFirestore() -> [String: Any] {
         var data: [String: Any] = [
             "userId": userId,
@@ -88,7 +81,7 @@ struct Chirp: Identifiable {
         return data
     }
     
-    // Check if a user has liked this chirp
+    // if user has already liked a chirp
     func isLikedBy(userId: String) -> Bool {
         return likedBy.contains(userId)
     }

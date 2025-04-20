@@ -1,10 +1,3 @@
-//
-//  ChirpRowView.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 4/17/25.
-//
-
 import SwiftUI
 
 struct ChirpRowView: View {
@@ -33,12 +26,12 @@ struct ChirpRowView: View {
                     .foregroundColor(.gray)
             }
             
-            // Chirp Content
+            // chirp conetent
             Text(chirp.text)
                 .lineLimit(6)
                 .fixedSize(horizontal: false, vertical: true)
             
-            // Location if available
+            // taking location if there
             if let location = chirp.location {
                 HStack {
                     Image(systemName: "mappin.and.ellipse")
@@ -50,15 +43,14 @@ struct ChirpRowView: View {
                 }
             }
             
-            // Engagement Stats - Fixed width to prevent layout issues
+            //getting all the likes and comments
             HStack(spacing: 20) {
                 Button(action: {
                     if let userId = sessionViewModel.currentUser?.id {
-                        // Toggle local state for immediate feedback
+
                         isLiked.toggle()
                         localLikeCount = isLiked ? localLikeCount + 1 : max(0, localLikeCount - 1)
                         
-                        // Call API to update on server
                         likeViewModel.likeChirp(chirpId: chirp.id, userId: userId) { _ in }
                     }
                 }) {
@@ -71,7 +63,7 @@ struct ChirpRowView: View {
                     }
                     .frame(minWidth: 40)
                 }
-                .buttonStyle(BorderlessButtonStyle()) // This is crucial for nested buttons
+                .buttonStyle(BorderlessButtonStyle())
 
                 HStack {
                     Image(systemName: "bubble.left")
@@ -91,7 +83,7 @@ struct ChirpRowView: View {
         .padding(.horizontal, 10)
         .padding(.vertical, 5)
         .onAppear {
-            // Initialize like state and count from the chirp data
+            // Initializing the like state and count from chirp data
             if let userId = sessionViewModel.currentUser?.id {
                 isLiked = chirp.likedBy.contains(userId)
             }
@@ -99,7 +91,7 @@ struct ChirpRowView: View {
         }
     }
     
-    // Helper function to format time
+    // formatiing time
     private func timeAgoSince(_ date: Date) -> String {
         let calendar = Calendar.current
         let now = Date()

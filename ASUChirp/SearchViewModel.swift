@@ -1,14 +1,8 @@
-//
-//  SearchViewModel.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 4/17/25.
-//
-
 import Foundation
 import FirebaseFirestore
 import Combine
 
+// search functionality
 class SearchViewModel: ObservableObject {
     @Published var searchText = ""
     @Published var searchResults: [Chirp] = []
@@ -23,14 +17,13 @@ class SearchViewModel: ObservableObject {
         setupSearchPublisher()
     }
     
+    
     private func setupSearchPublisher() {
         $searchText
             .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
             .removeDuplicates()
             .map { text in
-                // Keep original capitalization for display
                 self.formattedSearchText = text
-                // Return lowercase for searching
                 return text.lowercased()
             }
             .filter { !$0.isEmpty }
@@ -43,9 +36,7 @@ class SearchViewModel: ObservableObject {
     private func performSearch(searchTerm: String) {
         isLoading = true
         errorMessage = nil
-        
-        // Firebase doesn't support native text search, so we'll do a simple contains query
-        // In a real app, you might use Algolia or a similar search service
+        // search functionality
         
         db.collection("chirps")
             .order(by: "timestamp", descending: true)
@@ -64,7 +55,7 @@ class SearchViewModel: ObservableObject {
                     return
                 }
                 
-                // Client-side filtering for text content
+                // text content
                 self.searchResults = documents.compactMap { document -> Chirp? in
                     let id = document.documentID
                     let data = document.data()
@@ -72,7 +63,7 @@ class SearchViewModel: ObservableObject {
                         return nil
                     }
                     
-                    // Check if text contains search term (case insensitive)
+                    // Check if the text contains search term or not
                     if chirp.text.lowercased().contains(searchTerm) ||
                        chirp.username.lowercased().contains(searchTerm) {
                         return chirp

@@ -1,10 +1,3 @@
-//
-//  Comment.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 4/17/25.
-//
-
 import Foundation
 import FirebaseFirestore
 
@@ -16,7 +9,7 @@ struct Comment: Identifiable {
     var text: String
     var timestamp: Date
     
-    // Create from Firestore document
+    //firestore document
     static func fromFirestore(id: String, data: [String: Any]) -> Comment? {
         guard
             let chirpId = data["chirpId"] as? String,
@@ -38,7 +31,7 @@ struct Comment: Identifiable {
         )
     }
     
-    // Convert to Firestore document
+    // Converting to firestore document
     func toFirestore() -> [String: Any] {
         return [
             "chirpId": chirpId,

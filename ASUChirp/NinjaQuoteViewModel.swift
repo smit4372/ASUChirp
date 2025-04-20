@@ -1,12 +1,6 @@
-//
-//  NinjaQuoteViewModel.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 4/19/25.
-//
-
 import Foundation
 import FirebaseFirestore
+// WebAPI
 
 class NinjaQuoteViewModel: ObservableObject {
     let apiKey = "83NDrqQP9MYOrku0lB/4qQ==PMJYHYhMIVRi3EZM"
@@ -18,13 +12,13 @@ class NinjaQuoteViewModel: ObservableObject {
         let now = Date()
         let calendar = Calendar.current
         
-        // Check if we've already posted today
+        // if already posted or not
         if let lastPostDate = lastPostDate,
            calendar.isDate(lastPostDate, inSameDayAs: now) {
-            return // Already posted today
+            return
         }
         
-        // Check if it's after 9 AM
+        // posting at morning 9 AM
         let components = calendar.dateComponents([.hour], from: now)
         if let hour = components.hour, hour >= 9 {
             fetchAndPostQuote()
@@ -32,6 +26,8 @@ class NinjaQuoteViewModel: ObservableObject {
         }
     }
     
+    
+    // WebAPI calling and json parsing
     private func fetchAndPostQuote() {
         isLoading = true
         errorMessage = nil
@@ -70,11 +66,12 @@ class NinjaQuoteViewModel: ObservableObject {
         }.resume()
     }
     
+    // posting the recieved chirp as a chirp form official
     private func saveQuoteAsChirp(_ quote: NinjaQuote) {
         let db = Firestore.firestore()
         let quoteText = "💬 \(quote.quote)\n— \(quote.author)"
         
-        // Check if this exact quote has been posted before
+        // Checking if quote already there
         db.collection("chirps")
             .whereField("text", isEqualTo: quoteText)
             .whereField("userId", isEqualTo: "chirp-team")
@@ -86,14 +83,14 @@ class NinjaQuoteViewModel: ObservableObject {
                     return
                 }
                 
-                // Only post if not a duplicate
+                // only posting if not duplicate
                 if let snapshot = snapshot, snapshot.documents.isEmpty {
                     let chirpData: [String: Any] = [
                         "text": quoteText,
                         "timestamp": FieldValue.serverTimestamp(),
                         "username": "ChirpTeam",
                         "userId": "chirp-team",
-                        "userEmail": "chirpteam@asu.edu", // Add this to match your Chirp structure
+                        "userEmail": "chirpteam@asu.edu",
                         "likeCount": 0,
                         "commentCount": 0,
                         "likedBy": []

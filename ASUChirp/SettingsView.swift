@@ -1,13 +1,6 @@
-//
-//  SettingsView.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 3/29/25.
-//
-
 import SwiftUI
 import FirebaseAuth
-
+// settings view
 struct SettingsView: View {
     @EnvironmentObject var sessionViewModel: SessionViewModel
     @AppStorage("isDarkMode") private var isDarkMode = false

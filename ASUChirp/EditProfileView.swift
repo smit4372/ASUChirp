@@ -1,10 +1,3 @@
-//
-//  EditProfileView.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 3/29/25.
-//
-
 import SwiftUI
 import FirebaseFirestore
 

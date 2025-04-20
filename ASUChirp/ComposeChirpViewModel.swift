@@ -1,10 +1,3 @@
-//
-//  ComposeChirpViewModel.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 4/17/25.
-//
-
 import Foundation
 import FirebaseFirestore
 import CoreLocation
@@ -36,7 +29,7 @@ class ComposeChirpViewModel: ObservableObject {
         errorMessage = nil
         
         let chirp = Chirp(
-            id: UUID().uuidString, // Firestore will replace this
+            id: UUID().uuidString,
             userId: userId,
             username: username,
             userEmail: userEmail,
