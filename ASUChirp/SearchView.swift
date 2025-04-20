@@ -1,3 +1,6 @@
+//Smit Desai
+//Saanvi Patel
+
 // search functionalities
 import SwiftUI
 

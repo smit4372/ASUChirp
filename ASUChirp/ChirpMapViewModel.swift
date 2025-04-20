@@ -1,9 +1,6 @@
-//
-//  ChirpMapViewModel.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 4/17/25.
-//
+//Smit Desai
+//Saanvi Patel
+
 
 import Foundation
 import FirebaseFirestore

@@ -1,3 +1,6 @@
+//Smit Desai
+//Saanvi Patel
+
 import Foundation
 import FirebaseAuth
 // session storing for user's login

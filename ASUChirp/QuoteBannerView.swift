@@ -1,3 +1,6 @@
+//Smit Desai
+//Saanvi Patel
+
 // view for the quote
 import SwiftUI
 

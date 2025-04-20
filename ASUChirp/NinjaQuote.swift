@@ -1,3 +1,6 @@
+//Smit Desai
+//Saanvi Patel
+
 import Foundation
 // daily API quote
 struct NinjaQuote: Decodable {

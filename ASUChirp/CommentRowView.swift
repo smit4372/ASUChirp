@@ -1,3 +1,6 @@
+//Smit Desai
+//Saanvi Patel
+
 import SwiftUI
 
 struct CommentRowView: View {

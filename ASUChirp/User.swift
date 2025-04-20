@@ -1,3 +1,6 @@
+//Smit Desai
+//Saanvi Patel
+
 // user view
 import Foundation
 import FirebaseAuth

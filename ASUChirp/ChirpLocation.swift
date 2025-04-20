@@ -1,12 +1,7 @@
-//
-//  ChirpLocation.swift
-//  ASUChirp
-//
-//  Created by Smit Desai on 4/17/25.
-//
+//Smit Desai
+//Saanvi Patel
 
 
-// ChirpLocation.swift
 import Foundation
 import CoreLocation
 
