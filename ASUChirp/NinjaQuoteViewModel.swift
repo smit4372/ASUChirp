@@ -20,7 +20,6 @@ class NinjaQuoteViewModel: ObservableObject {
             UserDefaults.standard.set(now, forKey: "lastQuotePostTime")
         }
     }
-    
     private func fetchAndPostQuote() {
         let url = URL(string: "https://api.api-ninjas.com/v1/quotes")!
         var request = URLRequest(url: url)
