@@ -105,7 +105,6 @@ struct SearchView: View {
                         VStack(alignment: .leading, spacing: 16) {
                             SearchSuggestionRow(icon: "person.fill", text: "Try searching for a username")
                             SearchSuggestionRow(icon: "number", text: "Try searching for a hashtag")
-                            SearchSuggestionRow(icon: "mappin.and.ellipse", text: "Try searching for a location")
                             SearchSuggestionRow(icon: "magnifyingglass", text: "Try searching for keywords")
                         }
                         .padding()
